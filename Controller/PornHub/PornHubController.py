@@ -11,6 +11,7 @@ class PornHubController(AbstractController):
         self.command_handlers = {
             "random": self._process_random_command,
             "search": self._process_keyword_command,
+            "clean": self._process_clean
         }
 
     async def _process_random_command(self, message):
@@ -30,6 +31,11 @@ class PornHubController(AbstractController):
 
         async with message.channel.typing():
             await message.channel.send(response)
+
+    async def _process_clean(self, message):
+        messages = await message.channel.history(limit=200).flatten()
+        for m in messages:
+            await m.delete()
 
 '''
     @staticmethod

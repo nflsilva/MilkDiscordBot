@@ -17,7 +17,7 @@ class MilkDiscordBot(discord.Client):
         self.token = os.getenv('DISCORD_TOKEN')
         self.server = os.getenv('DISCORD_SERVER')
         self.channel = os.getenv('DISCORD_CHANNEL')
-        self.message_trigger = "m!"
+        self.message_trigger = "!"
 
     def load_controllers(self):
         self.controllers = []
@@ -81,7 +81,7 @@ class MilkDiscordBot(discord.Client):
 
     async def on_message(self, message):
         # for debug
-        if message.author == bot.user or message.channel.guild.name != "bottest":
+        if message.author == bot.user: #or message.channel.guild.name != "bottest":
             return
 
         is_not_trigger = message.content[:len(self.message_trigger)] != self.message_trigger
@@ -92,10 +92,15 @@ class MilkDiscordBot(discord.Client):
         for controller in self.controllers:
             await controller.process_message(message)
 
-        return
-
         #else:
             #await PornHubController.handle_surprise(channel, author, message_text.split(" "))
+
+    async def on_reaction_add(self, reaction, user):
+        if user == bot.user:
+            return
+
+        for controller in self.controllers:
+            await controller.process_reaction(reaction, user)
 
 
 bot = MilkDiscordBot()
