@@ -23,7 +23,7 @@ class MusicPlayerController(AbstractController):
             self.was_shuffled = False
 
         def is_idle_overtime(self):
-            return self.idle_cycles > 10
+            return self.idle_cycles > 2
 
         def refresh_idle_time(self):
             self.idle_cycles = 0
@@ -53,7 +53,6 @@ class MusicPlayerController(AbstractController):
             return self.current_music_index >= len(self.music_queue) and not self.in_loop
 
         def get_playlist_ui(self):
-
             title = "Now playing \n"
             if self.in_loop or self.was_shuffled:
                 title += "Modes: [ "
@@ -62,10 +61,12 @@ class MusicPlayerController(AbstractController):
                 if self.was_shuffled:
                     title += Emoji.SHUFFLE + " "
                 title += "]\n"
-
             content = title
             content += f"```\n"
-            for i in range(0, len(self.music_queue)):
+            for i in range(
+                    max(0, self.current_music_index - 5),
+                    min(len(self.music_queue), self.current_music_index + 20)):
+
                 song = self.music_queue[i]
                 if i == self.current_music_index - 1:
                     content += Emoji.PLAY
@@ -101,7 +102,7 @@ class MusicPlayerController(AbstractController):
         for guild_context in self.guild_contexts.values():
             voice_client = guild_context.guild.voice_client
 
-            if guild_context.guild.voice_client is None or guild_context.current_music_index == 0:
+            if guild_context.guild.voice_client is None and guild_context.current_music_index == 0:
                 continue
 
             if voice_client.is_playing():
@@ -139,8 +140,7 @@ class MusicPlayerController(AbstractController):
     async def _play_next_song(self, guild_context):
 
         if guild_context.is_on_last_music():
-            await guild_context.message.clear_reactions()
-            guild_context.clear_playlist()
+            await self._handle_stop(guild_context.message)
 
         song = guild_context.get_next_music()
         guild_context.refresh_idle_time()
@@ -240,11 +240,11 @@ class MusicPlayerController(AbstractController):
         await self._play_next_song(guild_context)
 
     async def _handle_stop(self, message):
+        if message is None:
+            return
+        await asyncio.gather(message.clear_reactions(), message.edit(embed=None))
+        message.guild.voice_client.stop()
         self.guild_contexts[message.guild.id].clear_playlist()
-        if message.guild.voice_client.is_playing():
-            message.guild.voice_client.stop()
-            await asyncio.gather(message.clear_reactions(),
-                                 message.edit(embed=None))
 
     async def _handle_pause(self, message):
         if message.guild.voice_client.is_playing():

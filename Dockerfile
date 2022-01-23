@@ -1,15 +1,15 @@
-FROM python:3.9
+FROM python:3.9-slim
 
 RUN apt-get update && \
-    apt-get install -y ffmpeg
+    apt-get install -y ffmpeg gcc make vim
 
 WORKDIR /MilkDiscordBot
 
-COPY requirements.txt .
 
+COPY *.py ./
+COPY ./Controller ./Controller
+COPY .env .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY main.py .
-COPY ./Module ./Module
-
-CMD ["python", "main.py"]
+CMD ["python", "App.py"]
