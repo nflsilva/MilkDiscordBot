@@ -38,7 +38,6 @@ class MusicPlayerController(AbstractController):
             self.music_queue.append(music)
 
         def clear_playlist(self):
-            self.message = None
             self.current_music_index = 0
             self.music_queue.clear()
 
@@ -84,8 +83,6 @@ class MusicPlayerController(AbstractController):
         self.command_handlers = {
             "leave": self._leave_voice_channel,
             "stop": self._handle_stop,
-            "pause": self._handle_pause,
-            "resume": self._handle_resume,
             "skip": self._handle_skip,
             "play": self._handle_play,
             "shuffle": self._handle_shuffle
@@ -189,6 +186,7 @@ class MusicPlayerController(AbstractController):
                 video = random.choice(search_results)["id"]
                 song = pafy.new(video)
                 guild_context.add_music(song)
+
         elif is_playlist:
             playlist = Playlist(message.content)
             await message.add_reaction(Emoji.THUMBS_UP)
@@ -240,19 +238,9 @@ class MusicPlayerController(AbstractController):
         await self._play_next_song(guild_context)
 
     async def _handle_stop(self, message):
-        if message is None:
-            return
         await asyncio.gather(message.clear_reactions(), message.edit(embed=None))
         message.guild.voice_client.stop()
         self.guild_contexts[message.guild.id].clear_playlist()
-
-    async def _handle_pause(self, message):
-        if message.guild.voice_client.is_playing():
-            message.guild.voice_client.pause()
-
-    async def _handle_resume(self, message):
-        if not message.guild.voice_client.is_playing():
-            message.guild.voice_client.resume()
 
     def _handle_shuffle(self, message):
         guild_context = self.guild_contexts[message.guild.id]
