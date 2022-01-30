@@ -83,7 +83,7 @@ class MusicPlayerController(AbstractController):
     def __init__(self):
         super().__init__()
         self.ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-                               'options': '-vn'}
+                               'options': '-vn -qscale 8 -ab 196608'}
         self.music_players = {}
         self.command_handlers = {
             "stop": self._handle_stop,
