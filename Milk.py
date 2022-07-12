@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 import asyncio
-from MilkBackgroundJob import MilkBackgroundJob
+from Common.MilkBackgroundJob import MilkBackgroundJob
 from Controller.Twitch.TwitchController import TwitchController
 from Controller.PornHub.PornHubController import PornHubController
 from Controller.MusicPlayer.MusicPlayerController import MusicPlayerController
