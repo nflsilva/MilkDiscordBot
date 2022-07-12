@@ -3,11 +3,11 @@ import os
 from dotenv import load_dotenv
 
 import asyncio
-
-from MilkBackgroundJob import MilkBackgroundJob
+from Common.MilkBackgroundJob import MilkBackgroundJob
 from Controller.Twitch.TwitchController import TwitchController
 from Controller.PornHub.PornHubController import PornHubController
 from Controller.MusicPlayer.MusicPlayerController import MusicPlayerController
+from Controller.GuildActivity.GuildActivityController import GuildActivityController
 
 
 class MilkDiscordBot(discord.Client):
@@ -24,6 +24,7 @@ class MilkDiscordBot(discord.Client):
         self.controllers.append(TwitchController())
         self.controllers.append(PornHubController())
         self.controllers.append(MusicPlayerController())
+        self.controllers.append(GuildActivityController())
 
     def create_background_job(self):
         self.background_job = MilkBackgroundJob(self.background_method)

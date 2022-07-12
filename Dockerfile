@@ -7,6 +7,6 @@ RUN pip install -r requirements.txt
 
 COPY *.py ./
 COPY ./Controller ./Controller
-COPY .env .
+COPY ./Common ./Common
 
-CMD ["python", "App.py"]
+CMD ["python", "Milk.py"]

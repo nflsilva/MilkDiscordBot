@@ -5,7 +5,7 @@ from discord import FFmpegPCMAudio
 import random
 from Controller.AbstractController import AbstractController
 import asyncio
-from Emoji import *
+from Common.Emoji import *
 from discord import Embed
 
 
